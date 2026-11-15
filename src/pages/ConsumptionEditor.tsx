@@ -19,6 +19,7 @@ import {
   fieldsFrom,
   routeId,
 } from "../utils/validation";
+import { MeterCalculator } from "../components/MeterCalculator";
 import { today } from "../utils/energy";
 import NotFound from "./NotFound";
 
@@ -153,9 +154,17 @@ function Editor({
             required
             inputMode="decimal"
             placeholder="Ex.: 7,5"
+            hint="kWh é a energia consumida. Se você só tem a leitura acumulada, use a calculadora abaixo."
             value={value}
             error={errors.consumoKwh}
             onChange={(event) => setValue(event.target.value)}
+          />
+          <MeterCalculator
+            onUse={(kwh, date) => {
+              setValue(String(kwh).replace(".", ","));
+              setData(date);
+              setErrors({});
+            }}
           />
           <SelectField
             id="consumption-origin"
