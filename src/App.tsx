@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { Loading } from "./components/ui";
 import Home from "./pages/Home";
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const About = lazy(() => import("./pages/About"));
 const Team = lazy(() => import("./pages/Team"));
 const Faq = lazy(() => import("./pages/Faq"));
@@ -27,6 +28,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="como-funciona" element={<HowItWorks />} />
             <Route path="sobre" element={<About />} />
             <Route path="integrantes" element={<Team />} />
             <Route path="faq" element={<Faq />} />
