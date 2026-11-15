@@ -1,0 +1,1182 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EcoLar — contrato proposto, não homologado",
+    "version": "0.1.0",
+    "description": "Proposta para discussão com a equipe Java. Não prova implementação, URL publicada ou integração. Confirmar DTOs, nomes, validações e status. Sem servidor fictício configurado. Restrições adicionais: consumo sem data futura, unicidade residência/data, meta sem sobreposição e residência com filhos não removível."
+  },
+  "paths": {
+    "/residencias": {
+      "get": {
+        "summary": "Listar residências",
+        "operationId": "get__residencias",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Residencia"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar residência",
+        "operationId": "post__residencias",
+        "responses": {
+          "201": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Residencia"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL do recurso criado",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResidenciaInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/residencias/{id}": {
+      "get": {
+        "summary": "get residência",
+        "operationId": "get__residencias_id",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Residencia"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "put residência",
+        "operationId": "put__residencias_id",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Residencia"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResidenciaInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "delete residência",
+        "operationId": "delete__residencias_id",
+        "responses": {
+          "204": {
+            "description": "Exclusão confirmada, sem corpo"
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "/residencias/{id}/consumos": {
+      "get": {
+        "summary": "Listar consumos da residência",
+        "operationId": "get__residencias_id_consumos",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Consumo"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Criar Consumo na residência",
+        "operationId": "post__residencias_id_consumos",
+        "responses": {
+          "201": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Consumo"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL do recurso criado",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsumoInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consumos": {
+      "get": {
+        "summary": "CRUD Java completo: listar consumos",
+        "operationId": "get__consumos",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Consumo"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "CRUD Java completo: cadastrar Consumo",
+        "operationId": "post__consumos",
+        "responses": {
+          "201": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Consumo"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL do recurso criado",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsumoUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consumos/{id}": {
+      "get": {
+        "summary": "get Consumo",
+        "operationId": "get__consumos_id",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Consumo"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "put Consumo",
+        "operationId": "put__consumos_id",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Consumo"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsumoUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "delete Consumo",
+        "operationId": "delete__consumos_id",
+        "responses": {
+          "204": {
+            "description": "Exclusão confirmada, sem corpo"
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "/residencias/{id}/metas": {
+      "get": {
+        "summary": "Listar metas da residência",
+        "operationId": "get__residencias_id_metas",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Meta"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Criar Meta na residência",
+        "operationId": "post__residencias_id_metas",
+        "responses": {
+          "201": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL do recurso criado",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetaInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metas": {
+      "get": {
+        "summary": "CRUD Java completo: listar metas",
+        "operationId": "get__metas",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Meta"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "CRUD Java completo: cadastrar Meta",
+        "operationId": "post__metas",
+        "responses": {
+          "201": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL do recurso criado",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetaUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metas/{id}": {
+      "get": {
+        "summary": "get Meta",
+        "operationId": "get__metas_id",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "put Meta",
+        "operationId": "put__metas_id",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetaUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "delete Meta",
+        "operationId": "delete__metas_id",
+        "responses": {
+          "204": {
+            "description": "Exclusão confirmada, sem corpo"
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "/residencias/{id}/previsao": {
+      "post": {
+        "summary": "Consultar modelo real de previsão; sem corpo",
+        "operationId": "post__residencias_id_previsao",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Previsao"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "/residencias/{id}/padrao": {
+      "post": {
+        "summary": "Consultar modelo real de agrupamento; sem corpo",
+        "operationId": "post__residencias_id_padrao",
+        "responses": {
+          "200": {
+            "description": "Operação confirmada pela API real após implementação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Padrao"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro JSON: 400, 404, 405, 409 ou 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erro"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ResidenciaInput": {
+        "type": "object",
+        "required": [
+          "nome",
+          "quantidadeMoradores",
+          "tarifaKwh"
+        ],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "quantidadeMoradores": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "tarifaKwh": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      },
+      "ConsumoInput": {
+        "type": "object",
+        "required": [
+          "data",
+          "consumoKwh",
+          "origem"
+        ],
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date"
+          },
+          "consumoKwh": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "origem": {
+            "type": "string",
+            "enum": [
+              "MANUAL",
+              "IMPORTADO",
+              "SIMULADO"
+            ]
+          }
+        }
+      },
+      "MetaInput": {
+        "type": "object",
+        "required": [
+          "dataInicio",
+          "dataFim",
+          "limiteKwh"
+        ],
+        "properties": {
+          "dataInicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "dataFim": {
+            "type": "string",
+            "format": "date"
+          },
+          "limiteKwh": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1000000
+          }
+        }
+      },
+      "Previsao": {
+        "type": "object",
+        "required": [
+          "dataAlvo",
+          "consumoPrevistoKwh",
+          "modelo"
+        ],
+        "properties": {
+          "dataAlvo": {
+            "type": "string",
+            "format": "date"
+          },
+          "consumoPrevistoKwh": {
+            "type": "number",
+            "minimum": 0
+          },
+          "modelo": {
+            "type": "string"
+          }
+        }
+      },
+      "Padrao": {
+        "type": "object",
+        "required": [
+          "dataInicio",
+          "dataFim",
+          "grupo",
+          "interpretacao",
+          "modelo"
+        ],
+        "properties": {
+          "dataInicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "dataFim": {
+            "type": "string",
+            "format": "date"
+          },
+          "grupo": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "interpretacao": {
+            "type": "string"
+          },
+          "modelo": {
+            "type": "string"
+          }
+        }
+      },
+      "Erro": {
+        "type": "object",
+        "required": [
+          "status",
+          "codigo",
+          "mensagem",
+          "campos"
+        ],
+        "properties": {
+          "status": {
+            "type": "integer"
+          },
+          "codigo": {
+            "type": "string"
+          },
+          "mensagem": {
+            "type": "string"
+          },
+          "campos": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Residencia": {
+        "type": "object",
+        "required": [
+          "id",
+          "nome",
+          "quantidadeMoradores",
+          "tarifaKwh"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "nome": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "quantidadeMoradores": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "tarifaKwh": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      },
+      "Consumo": {
+        "type": "object",
+        "required": [
+          "id",
+          "residenciaId",
+          "data",
+          "consumoKwh",
+          "origem"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "residenciaId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "data": {
+            "type": "string",
+            "format": "date"
+          },
+          "consumoKwh": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "origem": {
+            "type": "string",
+            "enum": [
+              "MANUAL",
+              "IMPORTADO",
+              "SIMULADO"
+            ]
+          }
+        }
+      },
+      "ConsumoUpdate": {
+        "type": "object",
+        "required": [
+          "residenciaId",
+          "data",
+          "consumoKwh",
+          "origem"
+        ],
+        "properties": {
+          "residenciaId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "data": {
+            "type": "string",
+            "format": "date"
+          },
+          "consumoKwh": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "origem": {
+            "type": "string",
+            "enum": [
+              "MANUAL",
+              "IMPORTADO",
+              "SIMULADO"
+            ]
+          }
+        }
+      },
+      "Meta": {
+        "type": "object",
+        "required": [
+          "id",
+          "residenciaId",
+          "dataInicio",
+          "dataFim",
+          "limiteKwh"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "residenciaId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dataInicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "dataFim": {
+            "type": "string",
+            "format": "date"
+          },
+          "limiteKwh": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1000000
+          }
+        }
+      },
+      "MetaUpdate": {
+        "type": "object",
+        "required": [
+          "residenciaId",
+          "dataInicio",
+          "dataFim",
+          "limiteKwh"
+        ],
+        "properties": {
+          "residenciaId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dataInicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "dataFim": {
+            "type": "string",
+            "format": "date"
+          },
+          "limiteKwh": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1000000
+          }
+        }
+      }
+    }
+  }
+}

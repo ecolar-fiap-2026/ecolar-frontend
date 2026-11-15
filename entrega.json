@@ -1,0 +1,21 @@
+{
+  "github": "",
+  "vercel": "",
+  "apiJava": "",
+  "youtubeFront": "",
+  "contato": "",
+  "duracaoVideoSegundos": 0,
+  "commits": { "Vinicius": 0, "Yan": 0, "Diego": 0 },
+  "evidencias": {
+    "getRemoto": false,
+    "escritaRemota": false,
+    "persistenciaOracle": false,
+    "rotasVercel": false,
+    "mobileComDados": false,
+    "tabletComDados": false,
+    "desktopComDados": false,
+    "linksAnonimos": false,
+    "revisaoHumana": false,
+    "identificacaoConferida": false
+  }
+}

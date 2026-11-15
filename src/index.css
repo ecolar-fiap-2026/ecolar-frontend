@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #123d31;
+  --color-leaf: #d3f290;
+  --color-paper: #f7f8f2;
+  --color-ink: #172c24;
+  --font-sans: "Segoe UI", Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply m-0 bg-paper font-sans text-ink antialiased;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply outline-offset-4 focus-visible:outline-2 focus-visible:outline-forest;
+  }
+  button:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: wait;
+  }
+  ::selection {
+    @apply bg-leaf text-forest;
+  }
+  input,
+  select,
+  textarea {
+    min-width: 0;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 disabled:opacity-60;
+  }
+  .btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-forest/20 bg-white px-5 py-3 text-sm font-semibold text-forest transition hover:bg-emerald-50 disabled:opacity-60;
+  }
+  .btn-danger {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-700 px-4 py-3 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60;
+  }
+  .input {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-base text-ink placeholder:text-slate-500 focus:border-forest;
+  }
+  .panel {
+    @apply rounded-2xl border border-forest/10 bg-white p-5 sm:p-7;
+  }
+  .text-link {
+    @apply inline-flex min-h-11 items-center gap-1 font-semibold text-forest underline decoration-forest/30 underline-offset-4 hover:decoration-forest;
+  }
+}
