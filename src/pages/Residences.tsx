@@ -101,8 +101,28 @@ export default function Residences() {
       <PageIntro
         eyebrow="Seu espaço"
         title="Minhas residências"
-        description="Organize os registros por residência. Nesta versão acadêmica, utilize nomes e dados fictícios."
+        description="Escolha uma casa para abrir o painel ou cadastre sua primeira residência. Use nomes e dados fictícios nesta versão acadêmica."
       />
+      <ol
+        aria-label="Etapas do acompanhamento"
+        className="mb-8 grid gap-3 sm:grid-cols-3"
+      >
+        {[
+          "Cadastre sua residência",
+          "Registre um dia de consumo",
+          "Acompanhe e defina metas",
+        ].map((step, index) => (
+          <li
+            key={step}
+            className="flex items-center gap-3 rounded-xl bg-mint/60 px-4 py-4 text-sm"
+          >
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-forest">
+              {index + 1}
+            </span>
+            {step}
+          </li>
+        ))}
+      </ol>
       <div className="mb-6 space-y-3">
         {feedback && <Notice kind="success">{feedback}</Notice>}
         {failure && <Notice kind="error">{failure}</Notice>}
@@ -112,7 +132,16 @@ export default function Residences() {
           {remote.loading ? (
             <Loading />
           ) : remote.error ? (
-            <RemoteError message={remote.error} retry={remote.reload} />
+            <div className="panel space-y-4">
+              <RemoteError message={remote.error} retry={remote.reload} />
+              <Link className="text-link" to="/como-funciona">
+                Veja como começar
+              </Link>
+              <p className="text-xs leading-relaxed text-slate-500">
+                Nenhum cadastro será confirmado enquanto o serviço não
+                responder.
+              </p>
+            </div>
           ) : remote.data?.length ? (
             remote.data.map((residence) => (
               <article key={residence.id} className="panel">
@@ -207,7 +236,7 @@ export default function Residences() {
             required
             inputMode="decimal"
             placeholder="Ex.: 0,90"
-            hint="Valor usado na estimativa. Não representa o valor final da fatura."
+            hint="Na fatura, procure o valor de energia por kWh. Use vírgula ou ponto decimal, sem R$. A estimativa não inclui tributos ou cobranças fixas."
             value={form.tarifaKwh}
             error={errors.tarifaKwh}
             onChange={(event) =>
@@ -238,7 +267,7 @@ export default function Residences() {
       <ConfirmDialog
         open={!!removing}
         title="Excluir residência?"
-        description={`A residência ${removing?.nome || ""} será removida. Se houver consumos ou metas vinculados, o serviço deve impedir a exclusão.`}
+        description={`A residência ${removing?.nome || ""} será removida. Residências com consumos ou metas vinculados precisam ter esses vínculos resolvidos antes da exclusão.`}
         busy={saving}
         onCancel={() => setRemoving(undefined)}
         onConfirm={remove}
