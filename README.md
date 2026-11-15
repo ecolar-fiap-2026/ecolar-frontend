@@ -4,6 +4,10 @@ Global Solution FIAP 2026/2 · CitizenTech · Turma 1TDSPV.
 
 O EcoLar ajuda o responsável pelo orçamento doméstico a organizar consumos diários de energia, acompanhar metas e comparar cenários de aparelhos. Esta versão acadêmica usa somente dados fictícios e não possui autenticação.
 
+## Atualização de experiência v2
+
+Interface inspirada nas referências do grupo, com ilustração original, navegação responsiva, página Como funciona, calculadora de leituras e exportação CSV do histórico. Para atualizar sem perder o Git, leia [ATUALIZACAO_V2_GIT_BASH.md](docs/ATUALIZACAO_V2_GIT_BASH.md). Para ligar o banco existente, leia [ORACLE_JAVA_PASSO_A_PASSO.md](docs/ORACLE_JAVA_PASSO_A_PASSO.md). Evidências e limites em [VALIDACAO_V2.md](docs/VALIDACAO_V2.md); origem da imagem em [RECURSOS_VISUAIS.md](docs/RECURSOS_VISUAIS.md).
+
 ## Situação desta versão
 
 Código do front implementado e compilável. A API Java do grupo não foi fornecida nesta preparação. Os serviços seguem um **contrato proposto**, baseado no guia EcoLar anexado. A conexão real, o Oracle, os deploys e os vídeos ainda precisam ser validados pelo grupo. Não há mock de produção, base falsa de residências nem sucesso simulado de gravação.
@@ -74,6 +78,7 @@ Variáveis `VITE_` ficam visíveis no navegador. Não colocar senhas, tokens sec
 | --- | --- |
 | `/` | Home |
 | `/integrantes` | Identificação e responsabilidades |
+| `/como-funciona` | Orientação passo a passo para o morador |
 | `/sobre` | Proposta, funcionamento e limites |
 | `/faq` | Dúvidas frequentes |
 | `/contato` | Formulário com validação e preparo de mensagem |
@@ -115,7 +120,7 @@ Preencher antes do Portal, também em `entrega.json`:
 
 | Recurso | Endereço |
 | --- | --- |
-| GitHub público | PENDENTE: criar repositório do grupo |
+| GitHub público | https://github.com/ecolar-fiap-2026/ecolar-frontend |
 | Vercel pública | PENDENTE: publicar e testar |
 | API Java no Render | PENDENTE: Diego informar URL real |
 | YouTube Front, até 3 min | PENDENTE: gravar e publicar |
