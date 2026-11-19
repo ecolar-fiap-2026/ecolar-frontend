@@ -215,6 +215,7 @@ export default function Residences() {
             required
             maxLength={100}
             placeholder="Ex.: Casa de demonstração"
+            hint="Escolha um apelido fictício de 2 a 100 caracteres. Ex.: Casa do Sol."
             value={form.nome}
             error={errors.nome}
             onChange={(event) => setForm({ ...form, nome: event.target.value })}
