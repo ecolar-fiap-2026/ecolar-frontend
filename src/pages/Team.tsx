@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PageIntro } from "../components/ui";
 import { team } from "../data/team";
 
@@ -45,6 +46,9 @@ export default function Team() {
         contribui para a mesma jornada: registrar, compreender e acompanhar o
         consumo residencial.
       </p>
+      <Link className="text-link mt-4" to="/contato">
+        Enviar uma mensagem à equipe
+      </Link>
     </>
   );
 }

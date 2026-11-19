@@ -10,9 +10,10 @@ export default function NotFound() {
         O endereço pode estar incorreto ou ter sido alterado. Você pode começar
         pela página inicial.
       </p>
-      <Link className="btn" to="/">
-        Voltar ao início
-      </Link>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Link className="btn" to="/">Voltar ao início</Link>
+        <Link className="btn-secondary" to="/residencias">Minhas residências</Link>
+      </div>
     </section>
   );
 }

@@ -12,8 +12,8 @@ export default function Faq() {
       />
       <div className="divide-y divide-forest/15 border-y border-forest/15">
         {questions.map(([question, answer]) => (
-          <details key={question} className="group py-5">
-            <summary className="py-2 pr-4 text-base font-semibold focus-visible:outline-2 focus-visible:outline-forest">
+          <details key={question} className="group rounded-lg px-3 py-5 open:bg-mint/40">
+            <summary className="cursor-pointer rounded-md py-2 pr-4 text-base font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest">
               {question}
             </summary>
             <p className="mt-3 pr-4 text-sm leading-7 text-slate-600">

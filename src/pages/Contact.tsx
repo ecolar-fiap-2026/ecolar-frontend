@@ -92,13 +92,16 @@ export default function Contact() {
               required
               maxLength={2000}
               aria-invalid={!!errors.mensagem}
-              aria-describedby={errors.mensagem ? "contact-error" : undefined}
+              aria-describedby={errors.mensagem ? "contact-count contact-error" : "contact-count"}
               value={form.mensagem}
               onChange={(event) => {
                 setReady(false);
                 setForm({ ...form, mensagem: event.target.value });
               }}
             />
+            <p id="contact-count" className="mt-2 text-sm text-slate-600">
+              {form.mensagem.length} de 2.000 caracteres · mínimo de 10
+            </p>
             {errors.mensagem && (
               <p id="contact-error" className="mt-2 text-sm text-red-700">
                 {errors.mensagem}
