@@ -4,9 +4,13 @@ Global Solution FIAP 2026/2 · CitizenTech · Turma 1TDSPV.
 
 O EcoLar ajuda o responsável pelo orçamento doméstico a organizar consumos diários de energia, acompanhar metas e comparar cenários de aparelhos. Esta versão acadêmica usa somente dados fictícios e não possui autenticação.
 
+## Atualização de experiência v2
+
+Interface inspirada nas referências do grupo, com ilustração original, navegação responsiva, página Como funciona, calculadora de leituras e exportação CSV do histórico. Para atualizar sem perder o Git, leia [ATUALIZACAO_V2_GIT_BASH.md](docs/ATUALIZACAO_V2_GIT_BASH.md). Para ligar o banco existente, leia [ORACLE_JAVA_PASSO_A_PASSO.md](docs/ORACLE_JAVA_PASSO_A_PASSO.md). Evidências e limites em [VALIDACAO_V2.md](docs/VALIDACAO_V2.md); origem da imagem em [RECURSOS_VISUAIS.md](docs/RECURSOS_VISUAIS.md).
+
 ## Situação desta versão
 
-Código do front implementado e compilável. A API Java do grupo não foi fornecida nesta preparação. Os serviços seguem um **contrato proposto**, baseado no guia EcoLar anexado. A conexão real, o Oracle, os deploys e os vídeos ainda precisam ser validados pelo grupo. Não há mock de produção, base falsa de residências nem sucesso simulado de gravação.
+O front v2 consome o contrato do EcoLar Java 1.0.0. A integração traduz os campos dos DTOs, envia a data de referência para a IA e apresenta os avisos dos modelos. Para testar com o Oracle do grupo, siga [LEIA_INTEGRACAO_JAVA.md](docs/LEIA_INTEGRACAO_JAVA.md).
 
 Sem `VITE_API_BASE_URL`, páginas institucionais e simulador funcionam; páginas dependentes do servidor mostram indisponibilidade. Não entregar essa condição como integração concluída.
 
@@ -33,16 +37,16 @@ Recomendado: Node.js 24 LTS e npm. O projeto declara Node >=22.12. Foi testado c
 3. Execute:
 
 ```bash
-npm install
+npm ci --include=optional
 ```
 
 4. Copie `.env.example` para `.env.local`. No PowerShell:
 
 ```powershell
-Copy-Item .env.example .env.local
+if (!(Test-Path .env.local)) { Copy-Item .env.example .env.local }
 ```
 
-5. Defina `VITE_API_BASE_URL` com a URL real da API Java, incluindo `/api` apenas se esse prefixo existir no Java. Exemplo exclusivamente local: `http://localhost:8080`.
+5. Para a API local do grupo, use `VITE_API_BASE_URL=http://localhost:8080` em `.env.local`.
 6. Execute:
 
 ```bash
@@ -74,6 +78,7 @@ Variáveis `VITE_` ficam visíveis no navegador. Não colocar senhas, tokens sec
 | --- | --- |
 | `/` | Home |
 | `/integrantes` | Identificação e responsabilidades |
+| `/como-funciona` | Orientação passo a passo para o morador |
 | `/sobre` | Proposta, funcionamento e limites |
 | `/faq` | Dúvidas frequentes |
 | `/contato` | Formulário com validação e preparo de mensagem |
@@ -105,7 +110,7 @@ Variáveis `VITE_` ficam visíveis no navegador. Não colocar senhas, tokens sec
 
 ## Integração e persistência
 
-O navegador chama Java por Fetch e HTTP/JSON. Java acessa Oracle por DAO/JDBC. Veja [CONTRATO_API.md](docs/CONTRATO_API.md) e [openapi.proposto.json](docs/openapi.proposto.json). São propostas a confrontar com os controllers e DTOs reais de Diego. Não renomear campos do banco para atender ao front sem alinhar o grupo; adapte DTOs/serviços quando necessário.
+O navegador chama o Java por Fetch. O Java acessa o Oracle por JDBC e consulta o Flask nas operações de IA. As rotas e os campos estão em [CONTRATO_API.md](docs/CONTRATO_API.md).
 
 Residências, consumos e metas dependem da API. O front não grava esses recursos em localStorage. Cálculos do painel usam apenas os registros retornados. Datas sem registro não são zero; custo é estimado pela tarifa atual. Análises de IA só aparecem após uma resposta real e válida. O simulador é matemático, independente de Python e sem IA.
 
@@ -115,7 +120,7 @@ Preencher antes do Portal, também em `entrega.json`:
 
 | Recurso | Endereço |
 | --- | --- |
-| GitHub público | PENDENTE: criar repositório do grupo |
+| GitHub público | https://github.com/ecolar-fiap-2026/ecolar-frontend |
 | Vercel pública | PENDENTE: publicar e testar |
 | API Java no Render | PENDENTE: Diego informar URL real |
 | YouTube Front, até 3 min | PENDENTE: gravar e publicar |

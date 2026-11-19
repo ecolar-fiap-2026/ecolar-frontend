@@ -1,112 +1,127 @@
-# Contrato proposto para integrar com Diego
+# Contrato Java efetivo e adaptação do React
 
-**Não é documentação extraída de uma API existente.** Os anexos trazem o domínio e exemplos, mas não controllers, DTOs, Swagger ou URL real. Este contrato orienta a implementação do front e deve ser confrontado com o Java antes do deploy. O arquivo `openapi.proposto.json` é a versão legível por ferramentas. Nenhum endpoint aqui é declarado implementado no servidor.
+Revisão: 17/11/2026. O arquivo openapi.proposto.json documenta a proposta anterior. Implementação recebida: EcoLar Java 1.0.0.
 
-## Arquitetura obrigatória e responsabilidades
+As telas mantêm id/nome/data/etc. Os serviços em src/services/java-contract.ts
+convertem o JSON do Java para esse domínio. src/services/ecolar.ts converte os
+corpos de entrada e os erros por campo. Não usar nomes das telas diretamente
+num Fetch novo; passar pela camada api. Os avisos da IA são preservados.
 
-React/Vite/TypeScript/Tailwind na Vercel usa Fetch para HTTP/JSON na API Java Spring Boot no Render. Java usa DataSource, DAO e PreparedStatement para JDBC no Oracle FIAP. O front nunca se conecta diretamente ao Oracle.
+# Contrato EcoLar Java — versão 1.0.0
 
-Dentro da API, o enunciado pede `model`, `dao`, `dto`, `controller`, `exception`, `handler`, `config` (p. 48). Um pacote `service` pode organizar regras, mas não substitui os obrigatórios. DTOs de entrada/saída com ModelMapper; Bean Validation e @Valid; handler com @RestControllerAdvice; CORS. JPA, Hibernate e Spring Data não podem substituir JDBC.
+Base local: http://localhost:8080. Recursos JSON; IDs novos vêm das sequences Oracle.
+Campos Java/JSON usam camelCase; JDBC faz a correspondência explícita com snake_case do Oracle.
+Não há prefixo /api. Todos os bodies POST/PUT usam Content-Type: application/json.
 
-Três entidades do escopo: Residencia, ConsumoDiario e MetaConsumo. Residencia possui relações 1:N com consumo e meta. Outras tabelas do banco não exigem necessariamente telas de CRUD no front. IA: caminho proposto Java -> Flask -> modelos exportados. Python procedural é outro módulo, independente e com JSON.
+## CRUD completo das três entidades do domínio
 
-## Convenções deste front
+| Método | Rota | Sucesso | Erros comuns |
+|---|---|---|---|
+| POST | /residencias | 201 + Location | 400 |
+| GET | /residencias | 200, array | 503 |
+| GET | /residencias/{id} | 200 | 400, 404 |
+| PUT | /residencias/{id} | 200 | 400, 404 |
+| DELETE | /residencias/{id} | 204, sem corpo | 404, 409 |
+| POST | /consumos | 201 + Location | 400, 404, 409 |
+| GET | /consumos | 200, array | 503 |
+| GET | /consumos/{id} | 200 | 400, 404 |
+| PUT | /consumos/{id} | 200 | 400, 404, 409 |
+| DELETE | /consumos/{id} | 204 | 404 |
+| POST | /metas | 201 + Location | 400, 404, 409 |
+| GET | /metas | 200, array | 503 |
+| GET | /metas/{id} | 200 | 400, 404 |
+| PUT | /metas/{id} | 200 | 400, 404, 409 |
+| DELETE | /metas/{id} | 204 | 404 |
 
-- Base em `VITE_API_BASE_URL`; caminhos abaixo relativos. Se o Java tiver `/api`, inclua na base, não duplique nas rotas.
-- Números JSON são números, nunca textos com vírgula. Datas: `YYYY-MM-DD`, sem horário. kWh/dia e R$/kWh.
-- Listas retornam arrays diretamente. Se o servidor usar `{content: [...]}`, adaptar o serviço e o schema explicitamente.
-- IDs JSON: `id` e `residenciaId`. Nomes físicos Oracle `cd_`, `nm_`, `vl_`, `dt_` permanecem no banco/DAO. DTO faz a separação.
-- Cadastro 201 + Location e JSON; atualização 200 + JSON; exclusão 204 sem corpo.
-- Erros 400, 404, 405, 409 e 500 em JSON. O front não transforma erro em sucesso.
+## Relacionamentos, cálculos e inferências
 
-## Endpoints consumidos
+| Método | Rota | Sucesso |
+|---|---|---|
+| GET | /residencias/{id}/consumos | 200, array; pai ausente 404 |
+| POST | /residencias/{id}/consumos | 201 + Location; ID da casa vem da rota |
+| GET | /residencias/{id}/metas | 200, array; pai ausente 404 |
+| POST | /residencias/{id}/metas | 201 + Location; ID da casa vem da rota |
+| GET | /residencias/{id}/resumo?inicio=2020-01-01&fim=2020-01-31 | 200 |
+| GET | /metas/{id}/acompanhamento | 200 |
+| POST | /residencias/{id}/previsoes | 201 + Location |
+| GET | /residencias/{id}/previsoes | 200, array |
+| GET | /previsoes/{id} | 200 |
+| POST | /residencias/{id}/analises | 201 + Location |
+| GET | /residencias/{id}/analises | 200, array |
+| GET | /analises/{id} | 200 |
+| GET | /health/live | 200, aplicação em execução |
+| GET | /health | 200 com conexão JDBC; 503 se banco indisponível |
 
-| Método | Rota | Resposta | Uso |
-| --- | --- | --- | --- |
-| GET | /residencias | Residencia[] | Lista |
-| POST | /residencias | Residencia, 201 | Cadastro |
-| GET | /residencias/{id} | Residencia | Painel / formulários |
-| PUT | /residencias/{id} | Residencia | Editar |
-| DELETE | /residencias/{id} | 204 | Remover sem filhos |
-| GET | /residencias/{id}/consumos | Consumo[] | Histórico |
-| POST | /residencias/{id}/consumos | Consumo, 201 | Registrar |
-| GET | /consumos/{id} | Consumo | Carregar edição |
-| PUT | /consumos/{id} | Consumo | Corrigir |
-| DELETE | /consumos/{id} | 204 | Remover |
-| GET | /residencias/{id}/metas | Meta[] | Acompanhamento |
-| POST | /residencias/{id}/metas | Meta, 201 | Criar |
-| PUT | /metas/{id} | Meta | Editar |
-| DELETE | /metas/{id} | 204 | Remover |
-| POST | /residencias/{id}/previsao | Previsao | Integração IA proposta |
-| POST | /residencias/{id}/padrao | Padrao | Integração IA proposta |
+O histórico de inferências é somente inclusão/consulta: não existe CRUD de edição ou exclusão
+para previsões e análises. São registros de execução, não as três entidades de CRUD avaliadas.
+Catálogo de aparelhos/vínculos é preservado no banco do grupo e está fora deste CRUD web.
 
-Java também precisa listar/buscar/cadastrar todos os recursos no seu CRUD completo, mesmo quando o front usa uma rota aninhada. Ex.: GET/POST /consumos, GET/POST /metas e GET /metas/{id}. Conferir rubrica Java p. 49.
+## Exemplos de bodies de entrada
 
-## JSONs combinados
-
-POST /residencias:
-
+Residência (POST e PUT):
 ```json
-{"nome":"Casa demonstrativa","quantidadeMoradores":3,"tarifaKwh":0.9}
+{"nmResidencia":"Casa de teste","qtMoradores":3,"vlTarifaKwh":1.0}
 ```
-
-Resposta:
-
+Consumo aninhado:
 ```json
-{"id":1,"nome":"Casa demonstrativa","quantidadeMoradores":3,"tarifaKwh":0.9}
+{"dtConsumo":"2020-01-01","vlConsumoKwh":6.2,"dsOrigem":"MANUAL"}
 ```
-
-POST /residencias/1/consumos:
-
+Meta aninhada:
 ```json
-{"data":"2026-11-01","consumoKwh":7.5,"origem":"SIMULADO"}
+{"dtInicio":"2020-01-01","dtFim":"2020-01-31","vlLimiteKwh":180}
 ```
+No POST /consumos, POST /metas e PUT de filhos, acrescentar cdResidencia numérico.
+Nas rotas aninhadas esse campo não deve ser enviado: a residência vem da URL.
+Dados desconhecidos e inteiros fracionários são rejeitados com 400.
 
-Resposta:
-
+Solicitação de IA (referência do último dia observado):
 ```json
-{"id":10,"residenciaId":1,"data":"2026-11-01","consumoKwh":7.5,"origem":"SIMULADO"}
+{"dataReferencia":"2026-10-14"}
 ```
+Exige sete consumos consecutivos da residência; retorna 409 se o histórico estiver incompleto.
+Java envia {historico:[{data,consumo_kwh},...]} ao Flask. Ao receber saída válida,
+usa as sequences existentes e persiste origem MODELO, sem alterar os fixtures SIMULADO.
+Consumos simulados como entrada geram aviso explícito. Erro do Flask nunca produz resultado fictício.
 
-PUT /consumos/10 usa os mesmos campos de entrada mais `residenciaId: 1`. A data inicial deve continuar editável respeitando a unicidade. Origem: MANUAL, IMPORTADO ou SIMULADO.
+## Exemplos de saída
 
-POST /residencias/1/metas:
-
+Residência criada (ID 1000 é ilustrativo; o valor real vem da sequence):
 ```json
-{"dataInicio":"2026-11-01","dataFim":"2026-11-30","limiteKwh":180}
+{"cdResidencia":1000,"nmResidencia":"Casa de teste","qtMoradores":3,"vlTarifaKwh":1.0}
 ```
-
-Resposta: os mesmos campos mais `id` e `residenciaId`. PUT /metas/{id} acrescenta `residenciaId` à entrada.
-
-Erro proposto:
-
+Consumo:
 ```json
-{"status":409,"codigo":"CONSUMO_DUPLICADO","mensagem":"Já existe um consumo para essa residência e data.","campos":{}}
+{"cdConsumo":1000,"cdResidencia":1000,"dtConsumo":"2020-01-01","vlConsumoKwh":6.2,"dsOrigem":"MANUAL"}
 ```
+Meta:
+```json
+{"cdMeta":1000,"cdResidencia":1000,"dtInicio":"2020-01-01","dtFim":"2020-01-31","vlLimiteKwh":180}
+```
+Erro padronizado (timestamp e ID variam):
+```json
+{"timestamp":"2026-11-16T18:00:00-03:00","status":404,"codigo":"nao_encontrado","mensagem":"Residência não encontrada.","caminho":"/residencias/999999","campos":{}}
+```
+Nenhuma resposta de erro expõe SQL, senha ou stack trace. 405 inclui Allow.
+415 para conteúdo não JSON; 406 para Accept incompatível; 500 para falha inesperada genérica.
+503 para indisponibilidade de banco/IA; 502 para saída inválida da IA; 504 para timeout de IA.
 
-Para campos inválidos, `campos` é mapa `{ "nomeDoCampo": "mensagem" }`, não lista. Adaptar explicitamente se o handler real for diferente.
+## Regras e limites
 
-Previsão proposta: `{ "dataAlvo": "2026-11-08", "consumoPrevistoKwh": 7.8, "modelo": "nome-versao-real" }`. Agrupamento: `{ "dataInicio": "2026-11-01", "dataFim": "2026-11-07", "grupo": 1, "interpretacao": "Texto derivado da análise do modelo", "modelo": "nome-versao-real" }`. Números de exemplo, não resultados obtidos. Os POSTs não enviam histórico pelo navegador; Java consulta Oracle e escolhe a janela conforme o modelo de Yan.
+- Um consumo por casa e dia, sem data futura; 0 a 10000 kWh/dia, até três casas decimais.
+- Nome da residência não vazio, máximo 100 caracteres; moradores 1–9999.
+- Tarifa não negativa: seis dígitos inteiros e quatro decimais; não é tarifa oficial.
+- Meta positiva, até nove dígitos inteiros e três decimais; fim maior/igual ao início.
+- Metas da mesma casa não podem se sobrepor (ambos os limites inclusivos).
+- Não transferir consumo/meta para outra casa por PUT; não remover casa com dependências.
+- Bloqueio da residência em transações serializa escritas concorrentes na mesma casa.
+- Resumo: até 3660 dias, sem inventar consumo zero para dias ausentes. Média usa dias registrados;
+  custo usa tarifa atual e não inclui impostos/bandeiras/custos fixos.
+- O esquema Oracle não guarda a lista completa de avisos da inferência. POST retorna avisos originais;
+  consultas do histórico informam essa limitação. Interpretação do grupo é persistida até 500 caracteres.
 
-## Regras a preservar
+## Front-end
 
-Um consumo por residência/data; consumo >=0; moradores inteiros >0; tarifa >=0; datas reais sem futuro para consumo realizado; meta limite >0 e fim >= início; sem metas sobrepostas; não remover residência com filhos. Conflitos de negócio retornam 409. Checagem no navegador melhora UX, mas Java e restrições Oracle são a autoridade. Definir com Yan/Diego os mesmos máximos, escalas e comprimentos para não divergir.
-
-Valores default não são inseridos na base automaticamente. Nos ensaios, criar registros fictícios pela API e manter origem SIMULADO. Um dado fictício persistido pelo Java pode testar integração real; isso é diferente de o front simular a API. Previsões fixas continuam inválidas como prova de modelo.
-
-## CORS e HTTPS
-
-Diego precisa liberar as origens exatas do Vite local e da URL pública Vercel, métodos GET/POST/PUT/DELETE/OPTIONS e cabeçalhos Accept/Content-Type. Se for usar previews, decidir quais origens permitir. `mode: no-cors` não resolve: impede ler a resposta. O front usa Fetch sem cookies ou tokens no MVP sem login. Se adicionarem autenticação, reavaliar CORS, credenciais e autorização.
-
-A Vercel em HTTPS deve chamar API HTTPS. Preflight OPTIONS precisa funcionar, sem redirecionamento indevido. Expor Location em CORS se o front passar a ler esse cabeçalho; o atual utiliza o ID do JSON. Credenciais do Oracle ficam somente no ambiente Render.
-
-## Sequência de homologação
-
-1. Diego entrega URL Render, controllers/DTOs ou Swagger, JSONs reais de GET e POST e exemplo de erro. Sem senhas.
-2. Comparar com `src/types/domain.ts` e `src/services/ecolar.ts`. Ajustar o contrato conscientemente.
-3. No Postman/Insomnia, executar CRUD das três entidades e 400/404/409.
-4. Definir `.env.local`, iniciar front, cadastrar residência, registrar consumo e recarregar. Conferir mesmo ID no Oracle.
-5. Publicar front, permitir a origem Vercel, repetir o fluxo em janela anônima e atualizar uma rota interna.
-6. Registrar data, URL, commit, IDs fictícios e evidências em VALIDACAO.md. Só então marcar integração concluída.
-
-Para IA, confirmar endpoints, histórico, timeout e saídas com Yan. A falha de análise não deve impedir ler o histórico. O front cancela HTTP após 20 s; o plano de negócio propõe 15 s no serviço de IA. Ajustar para que Java encerre a chamada ao Flask antes do prazo do navegador. Cold start pode exigir nova consulta; não reenviar uma escrita sem verificar se ela já foi gravada.
+Coleção em postman/EcoLar_Java.postman_collection.json: executar na ordem para criar e
+remover apenas os próprios registros de teste. O console em / usa Fetch real, mas é uma
+ferramenta de teste; não substitui o React/Vite/TypeScript/Tailwind exigido no front do grupo.
+Para testar CORS fora da API, autorizar a origem exata em CORS_ORIGINS, separada por vírgulas.

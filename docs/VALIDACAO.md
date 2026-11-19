@@ -4,7 +4,7 @@ Data da preparação: 15/11/2026. Ambiente local Linux, Node 24.22.1, dependênc
 
 ## Verificado nesta preparação
 
-- TypeScript estrito, suíte de testes e build de produção executados com sucesso. A suíte final tem 31 casos: cálculos, dados ausentes, datas, validações, ID e comportamento HTTP isolado.
+- TypeScript estrito, suíte de testes e build de produção executados com sucesso. A suíte inicial tinha 31 casos; a atualização v2 tem 46 (ver `VALIDACAO_V2.md`). Casos da base: cálculos, dados ausentes, datas, validações, ID e comportamento HTTP isolado.
 - Em navegador: Home, menu mobile, navegação, formulário de contato vazio/inválido/válido, simulador válido e limite inválido. O contato prepara texto e não declara envio. Foi corrigida e coberta a mensagem de e-mail, antes confundida com data.
 - Verificação de largura em 11 rotas × três viewports = 33 combinações, sem overflow horizontal no documento. Tamanhos exatos: 390×844, 768×1024 e 1440×900. Os estados de API indisponível foram usados nas rotas dependentes; isso não valida o layout com listas grandes reais.
 - Capturas reais da Home em desktop e mobile para o material de apresentação. A página auxiliar de medição foi removida da versão distribuída.

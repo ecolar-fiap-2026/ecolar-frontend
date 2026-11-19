@@ -30,7 +30,7 @@ export const consumptionInput = z.object({
   consumoKwh: z
     .number({ error: "Informe um consumo válido, como 7,5." })
     .min(0, "O consumo não pode ser negativo.")
-    .max(1_000_000, "Confira o consumo informado."),
+    .max(10_000, "O consumo deve ser de até 10.000 kWh por dia."),
   origem: z.enum(["MANUAL", "IMPORTADO", "SIMULADO"]),
 });
 export const goalInput = z

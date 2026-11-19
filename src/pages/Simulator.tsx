@@ -1,3 +1,4 @@
+import { MeterCalculator } from "../components/MeterCalculator";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { z } from "zod";
@@ -164,6 +165,12 @@ export default function Simulator() {
           </p>
         </div>
       </div>
+      <section className="mt-8">
+        <h2 className="mb-4 text-xl font-semibold">
+          Já tem duas leituras do medidor?
+        </h2>
+        <MeterCalculator />
+      </section>
     </>
   );
 }

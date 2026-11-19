@@ -1,6 +1,13 @@
-import { useCallback, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Plus, ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import {
+  Plus,
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  Download,
+  Target,
+} from "lucide-react";
 import { Analysis } from "../components/Analysis";
 import { ConsumptionChart } from "../components/ConsumptionChart";
 import {
@@ -27,6 +34,7 @@ import {
   today,
 } from "../utils/energy";
 import { routeId } from "../utils/validation";
+import { consumptionCsv, recentPeriod } from "../utils/history";
 import NotFound from "./NotFound";
 
 export default function Dashboard() {
@@ -46,6 +54,11 @@ function ResidenceDashboard({ id }: { id: number }) {
     [id],
   );
   const remote = useRemote(loader);
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (remote.data && hash === "#historico")
+      document.getElementById("historico")?.scrollIntoView({ block: "start" });
+  }, [remote.data, hash]);
   const [start, setStart] = useState(`${today().slice(0, 7)}-01`);
   const [end, setEnd] = useState(today());
   const [removing, setRemoving] = useState<Consumption>();
@@ -76,7 +89,21 @@ function ResidenceDashboard({ id }: { id: number }) {
           <ArrowLeft size={16} />
           Voltar às residências
         </Link>
-        <RemoteError message={remote.error} retry={remote.reload} />
+        <PageIntro
+          eyebrow="Painel da residência"
+          title="Visão geral da sua casa"
+          description="Aqui você acompanha o consumo registrado, os custos estimados e suas metas."
+        />
+        <div className="panel space-y-5">
+          <RemoteError message={remote.error} retry={remote.reload} />
+          <p className="text-sm text-slate-600">
+            Os indicadores aparecerão quando conseguirmos consultar os registros
+            desta residência.
+          </p>
+          <Link className="text-link" to="/simulador">
+            Enquanto isso, experimentar o simulador
+          </Link>
+        </div>
       </>
     );
   const { residence, records, goals } = remote.data;
@@ -92,8 +119,8 @@ function ResidenceDashboard({ id }: { id: number }) {
         Residências
       </Link>
       <PageIntro
-        eyebrow="Painel da residência"
-        title={residence.nome}
+        eyebrow={residence.nome}
+        title="Visão geral da sua casa"
         description={`${residence.quantidadeMoradores} moradores · Tarifa informada: R$ ${number(residence.tarifaKwh, 4)}/kWh`}
       >
         <Link className="btn shrink-0" to={`/residencias/${id}/consumos/novo`}>
@@ -106,6 +133,32 @@ function ResidenceDashboard({ id }: { id: number }) {
         {error && <Notice kind="error">{error}</Notice>}
       </div>
       <section className="panel mb-6" aria-label="Filtro de período">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold">
+            Qual período você quer acompanhar?
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="rounded-lg border border-forest/15 px-3 py-2 text-xs font-semibold text-forest hover:bg-mint"
+              onClick={() => {
+                setStart(`${today().slice(0, 7)}-01`);
+                setEnd(today());
+              }}
+            >
+              Este mês até hoje
+            </button>
+            <button
+              className="rounded-lg border border-forest/15 px-3 py-2 text-xs font-semibold text-forest hover:bg-mint"
+              onClick={() => {
+                const period = recentPeriod(today(), 7);
+                setStart(period.start);
+                setEnd(period.end);
+              }}
+            >
+              Últimos 7 dias
+            </button>
+          </div>
+        </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="grid flex-1 gap-4 sm:grid-cols-2">
             <Field
@@ -153,7 +206,7 @@ function ResidenceDashboard({ id }: { id: number }) {
               hint="Consumo × tarifa atual informada"
             />
             <Stat
-              label="Cobertura do período"
+              label="Dias registrados"
               value={`${result.days} / ${result.expectedDays} dias`}
               hint={
                 result.days < result.expectedDays
@@ -175,6 +228,53 @@ function ResidenceDashboard({ id }: { id: number }) {
             </Notice>
           </div>
           <section className="panel mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h2 className="flex items-center gap-2 text-xl font-semibold">
+                <Target size={23} className="text-forest" aria-hidden="true" />
+                Suas metas
+              </h2>
+              <Link className="text-link" to={`/residencias/${id}/metas`}>
+                Gerenciar metas
+              </Link>
+            </div>
+            {!goals.length ? (
+              <p className="mt-3 text-sm text-slate-600">
+                Nenhuma meta definida. Escolha um intervalo e um limite para
+                acompanhar.
+              </p>
+            ) : (
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {goals.map((goal) => {
+                  const status = goalSummary(records, goal);
+                  return (
+                    <div
+                      key={goal.id}
+                      className="border-t border-forest/10 pt-4"
+                    >
+                      <div className="flex flex-wrap justify-between gap-2 text-sm">
+                        <p>
+                          {dateLabel(goal.dataInicio)} a{" "}
+                          {dateLabel(goal.dataFim)}
+                        </p>
+                        <p className="font-semibold">{status.status}</p>
+                      </div>
+                      <progress
+                        className="my-3 h-3 w-full accent-forest"
+                        max={100}
+                        value={status.percentage}
+                        aria-label={`Uso da meta de ${number(goal.limiteKwh)} kWh`}
+                      />
+                      <p className="text-sm text-slate-600">
+                        {number(status.total)} de {number(goal.limiteKwh)} kWh ·{" "}
+                        {status.days}/{status.expectedDays} dias registrados
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+          <section className="panel mb-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-xl font-semibold">
                 Seu consumo ao longo dos dias
@@ -187,8 +287,39 @@ function ResidenceDashboard({ id }: { id: number }) {
             </div>
             <ConsumptionChart records={result.records} />
           </section>
-          <section className="mb-8" aria-label="Histórico de consumo">
-            <h2 className="mb-4 text-xl font-semibold">Histórico do período</h2>
+          <section
+            id="historico"
+            className="mb-8 scroll-mt-6"
+            aria-label="Histórico de consumo"
+          >
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-semibold">Histórico do período</h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  Corrija registros ou baixe os dados do intervalo selecionado.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                disabled={!result.records.length}
+                onClick={() => {
+                  const url = URL.createObjectURL(
+                    new Blob([consumptionCsv(result.records)], {
+                      type: "text/csv;charset=utf-8",
+                    }),
+                  );
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.download = `ecolar-consumos-${id}-${start}-${end}.csv`;
+                  link.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }}
+              >
+                <Download size={16} aria-hidden="true" />
+                Baixar CSV
+              </button>
+            </div>
             {!result.records.length ? (
               <Empty
                 title="Nenhum consumo neste intervalo"
@@ -198,13 +329,13 @@ function ResidenceDashboard({ id }: { id: number }) {
                 Ajuste as datas ou registre um dia para começar a acompanhar.
               </Empty>
             ) : (
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-3">
                 {[...result.records].reverse().map((record) => (
                   <article
                     key={record.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-forest/10 bg-white p-4"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-forest/10 bg-white px-5 py-4"
                   >
-                    <div>
+                    <div className="grid flex-1 gap-x-8 gap-y-1 sm:grid-cols-3 sm:items-center">
                       <h3 className="text-sm font-semibold">
                         {dateLabel(record.data)}
                       </h3>
@@ -242,47 +373,14 @@ function ResidenceDashboard({ id }: { id: number }) {
           </section>
         </>
       )}
-      <section className="panel mb-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold">Metas da residência</h2>
-          <Link className="text-link" to={`/residencias/${id}/metas`}>
-            Gerenciar metas
-          </Link>
-        </div>
-        {!goals.length ? (
-          <p className="mt-3 text-sm text-slate-600">
-            Nenhuma meta definida. Escolha um intervalo e um limite para
-            acompanhar.
-          </p>
-        ) : (
-          <div className="mt-5 space-y-5">
-            {goals.map((goal) => {
-              const status = goalSummary(records, goal);
-              return (
-                <div key={goal.id} className="border-t border-forest/10 pt-4">
-                  <div className="flex flex-wrap justify-between gap-2 text-sm">
-                    <p>
-                      {dateLabel(goal.dataInicio)} a {dateLabel(goal.dataFim)}
-                    </p>
-                    <p className="font-semibold">{status.status}</p>
-                  </div>
-                  <progress
-                    className="my-3 h-3 w-full accent-forest"
-                    max={100}
-                    value={status.percentage}
-                    aria-label={`Uso da meta de ${number(goal.limiteKwh)} kWh`}
-                  />
-                  <p className="text-sm text-slate-600">
-                    {number(status.total)} de {number(goal.limiteKwh)} kWh ·{" "}
-                    {status.days}/{status.expectedDays} dias registrados
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+      <Analysis
+        key={id}
+        residenceId={id}
+        latestDate={records.reduce(
+          (latest, record) => record.data > latest ? record.data : latest,
+          "",
         )}
-      </section>
-      <Analysis key={id} residenceId={id} />
+      />
       <ConfirmDialog
         open={!!removing}
         title="Excluir consumo?"

@@ -3,22 +3,34 @@ import { Sparkles } from "lucide-react";
 import { api } from "../services/ecolar";
 import { errorMessage } from "../services/http";
 import type { Prediction, Pattern } from "../types/domain";
-import { dateLabel, number } from "../utils/energy";
-import { Notice } from "./ui";
+import { isoDate } from "../types/domain";
+import { dateLabel, number, today } from "../utils/energy";
+import { Field, Notice } from "./ui";
 
-export function Analysis({ residenceId }: { residenceId: number }) {
+export function Analysis({
+  residenceId,
+  latestDate,
+}: {
+  residenceId: number;
+  latestDate?: string;
+}) {
+  const [referenceDate, setReferenceDate] = useState(latestDate || "");
   const [prediction, setPrediction] = useState<Prediction>();
   const [pattern, setPattern] = useState<Pattern>();
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  const validDate =
+    isoDate.safeParse(referenceDate).success && referenceDate <= today();
   async function analyze(kind: "previsao" | "padrao") {
+    if (busy || !validDate) return;
     setBusy(kind);
     setError("");
     if (kind === "previsao") setPrediction(undefined);
     else setPattern(undefined);
     try {
-      if (kind === "previsao") setPrediction(await api.predict(residenceId));
-      else setPattern(await api.pattern(residenceId));
+      if (kind === "previsao")
+        setPrediction(await api.predict(residenceId, referenceDate));
+      else setPattern(await api.pattern(residenceId, referenceDate));
     } catch (cause) {
       setError(errorMessage(cause));
     } finally {
@@ -32,26 +44,51 @@ export function Analysis({ residenceId }: { residenceId: number }) {
         <h2 className="text-xl font-semibold">Análises de consumo</h2>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-slate-600">
-        A proposta utiliza sete dias consecutivos para previsão e agrupamento.
-        As análises dependem do serviço de IA conectado e não garantem economia.
+        Selecione o último dia de sete dias consecutivos registrados. Cada ação
+        gera e salva um resultado no histórico. As análises dependem da IA
+        conectada e não garantem economia.
       </p>
+      <div className="mt-4 max-w-sm">
+        <Field
+          id="analysis-reference-date"
+          label="Último dia observado"
+          type="date"
+          value={referenceDate}
+          max={today()}
+          disabled={!!busy}
+          required
+          hint="Começa no consumo mais recente da residência. A API confere se os sete dias existem."
+          onChange={(event) => {
+            setReferenceDate(event.target.value);
+            setPrediction(undefined);
+            setPattern(undefined);
+            setError("");
+          }}
+        />
+      </div>
       <div className="my-5 flex flex-wrap gap-3">
         <button
           className="btn-secondary"
-          disabled={!!busy}
+          disabled={!!busy || !validDate}
           onClick={() => analyze("previsao")}
         >
-          {busy === "previsao" ? "Consultando previsão…" : "Consultar previsão"}
+          {busy === "previsao" ? "Gerando previsão…" : "Gerar previsão"}
         </button>
         <button
           className="btn-secondary"
-          disabled={!!busy}
+          disabled={!!busy || !validDate}
           onClick={() => analyze("padrao")}
         >
           {busy === "padrao" ? "Analisando padrão…" : "Analisar padrão"}
         </button>
       </div>
       {error && <Notice kind="error">{error}</Notice>}
+      {!validDate && (
+        <Notice>
+          Informe uma data válida, até hoje, com sete dias consecutivos
+          registrados.
+        </Notice>
+      )}
       {prediction && (
         <div className="mt-4 border-t border-forest/10 pt-4" role="status">
           <p className="text-sm font-semibold">
@@ -64,6 +101,11 @@ export function Analysis({ residenceId }: { residenceId: number }) {
             Modelo: {prediction.modelo}. Resultado estimado retornado pelo
             serviço.
           </p>
+          <div className="mt-3 space-y-2">
+            {prediction.avisos.map((aviso, i) => (
+              <Notice key={i}>{aviso}</Notice>
+            ))}
+          </div>
         </div>
       )}
       {pattern && (
@@ -74,6 +116,11 @@ export function Analysis({ residenceId }: { residenceId: number }) {
             {dateLabel(pattern.dataInicio)} a {dateLabel(pattern.dataFim)} ·
             Modelo: {pattern.modelo}
           </p>
+          <div className="mt-3 space-y-2">
+            {pattern.avisos.map((aviso, i) => (
+              <Notice key={i}>{aviso}</Notice>
+            ))}
+          </div>
         </div>
       )}
       {!prediction && !pattern && !busy && !error && (
