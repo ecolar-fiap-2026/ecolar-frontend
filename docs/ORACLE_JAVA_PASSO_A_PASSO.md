@@ -1,3 +1,5 @@
+> **Integração atual** · Para executar a API recebida e testar o front v2 no Windows, siga [LEIA_INTEGRACAO_JAVA.md](LEIA_INTEGRACAO_JAVA.md). Os exemplos abaixo registram o planejamento de 15/11. O Java entregue lê ORACLE_URL, ORACLE_USER e ORACLE_PASSWORD.
+
 # EcoLar — conectar o front, o Java e o Oracle
 
 Atualização de 15/11/2026. Este guia prepara a integração; não comprova uma conexão executada. A API Java, suas credenciais e o DDL executado no Oracle não foram disponibilizados nesta atualização.

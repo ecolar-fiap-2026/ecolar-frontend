@@ -373,7 +373,14 @@ function ResidenceDashboard({ id }: { id: number }) {
           </section>
         </>
       )}
-      <Analysis key={id} residenceId={id} />
+      <Analysis
+        key={id}
+        residenceId={id}
+        latestDate={records.reduce(
+          (latest, record) => record.data > latest ? record.data : latest,
+          "",
+        )}
+      />
       <ConfirmDialog
         open={!!removing}
         title="Excluir consumo?"

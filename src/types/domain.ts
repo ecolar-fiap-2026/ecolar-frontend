@@ -26,13 +26,15 @@ export const predictionSchema = z.object({
   dataAlvo: isoDate,
   consumoPrevistoKwh: z.number().nonnegative(),
   modelo: z.string().min(1),
+  avisos: z.array(z.string()),
 });
 export const patternSchema = z.object({
   dataInicio: isoDate,
   dataFim: isoDate,
-  grupo: z.union([z.string(), z.number()]),
+  grupo: z.number().int().nonnegative(),
   interpretacao: z.string().min(1),
   modelo: z.string().min(1),
+  avisos: z.array(z.string()),
 });
 
 export type Residence = z.infer<typeof residenceSchema>;
