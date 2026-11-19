@@ -141,6 +141,7 @@ function Editor({
           <Field
             label="Data do consumo"
             id="consumption-date"
+            hint="Use um lançamento por dia para cada casa. Para corrigir uma data já registrada, abra o histórico e edite o consumo."
             required
             type="date"
             max={today()}

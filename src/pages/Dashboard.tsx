@@ -317,7 +317,7 @@ function ResidenceDashboard({ id }: { id: number }) {
                 }}
               >
                 <Download size={16} aria-hidden="true" />
-                Baixar CSV
+                Exportar período (CSV)
               </button>
             </div>
             {!result.records.length ? (
