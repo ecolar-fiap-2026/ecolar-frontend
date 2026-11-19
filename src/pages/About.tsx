@@ -44,6 +44,9 @@ export default function About() {
               </li>
             ))}
           </ol>
+          <Link className="btn mt-6" to="/residencias">
+            Começar pela minha residência
+          </Link>
         </section>
         <div className="space-y-6">
           <section className="rounded-2xl bg-forest p-7 text-white">
