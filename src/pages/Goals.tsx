@@ -194,7 +194,9 @@ function GoalManager({ id }: { id: number }) {
           />
           <Field
             id="goal-end"
-            label="Fim"
+            label="Fim da meta"
+            min={form.dataInicio || undefined}
+            hint="Escolha o mesmo dia do início ou uma data posterior."
             required
             type="date"
             value={form.dataFim}
