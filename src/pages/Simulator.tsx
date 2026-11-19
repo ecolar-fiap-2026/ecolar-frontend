@@ -117,7 +117,9 @@ export default function Simulator() {
                 {money(Math.abs(result.current.cost - result.alternative.cost))}
               </h2>
               <p className="mt-2 text-sm text-white/75">
-                {result.current.cost >= result.alternative.cost
+                {result.current.cost === result.alternative.cost
+                  ? "Mesmo custo estimado nos dois cenários"
+                  : result.current.cost > result.alternative.cost
                   ? "Redução estimada no cenário alternativo"
                   : "Aumento estimado no cenário alternativo"}
               </p>
